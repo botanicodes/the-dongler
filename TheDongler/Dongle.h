@@ -9,26 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-/*
- 
- Dongle <CBPeripheralDelegate>
- .
- 
- - WriteMessage(message..., ^{})
- - ReadMessage(message..., ^{})
- - Reset
- 
- ~
- . messageQueue
- .
- 
- - WriteData
- - ReadData
- 
-
- 
- */
-
 typedef struct {
     uint16_t messageId;
     uint8_t payload[3];
@@ -36,6 +16,8 @@ typedef struct {
 
 
 @interface Dongle : NSObject<CBPeripheralDelegate>
+
+@property CBPeripheral *peripheral;
 
 - (void)writeData:(NSData*)data toUUID:(CBUUID*)uuid;
 - (NSData*)readDataFromUUID:(CBUUID*)uuid;
