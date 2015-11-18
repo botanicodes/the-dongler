@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06A758841BFD2ABB00D41791 /* Dongle.h in Headers */ = {isa = PBXBuildFile; fileRef = D81169E91BFD1A8800373D76 /* Dongle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06A758851BFD2ABB00D41791 /* Dongler.h in Headers */ = {isa = PBXBuildFile; fileRef = D81169EB1BFD1A8800373D76 /* Dongler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		06A758871BFD2B4B00D41791 /* Dongle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D81169E91BFD1A8800373D76 /* Dongle.h */; };
+		06A758881BFD2B4B00D41791 /* Dongler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D81169EB1BFD1A8800373D76 /* Dongler.h */; };
 		D81169ED1BFD1A8800373D76 /* Dongle.m in Sources */ = {isa = PBXBuildFile; fileRef = D81169EA1BFD1A8800373D76 /* Dongle.m */; };
 		D81169EE1BFD1A8800373D76 /* Dongler.m in Sources */ = {isa = PBXBuildFile; fileRef = D81169EC1BFD1A8800373D76 /* Dongler.m */; };
 /* End PBXBuildFile section */
@@ -18,6 +22,8 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				06A758871BFD2B4B00D41791 /* Dongle.h in CopyFiles */,
+				06A758881BFD2B4B00D41791 /* Dongler.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +77,18 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		06A758831BFD2AB000D41791 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				06A758841BFD2ABB00D41791 /* Dongle.h in Headers */,
+				06A758851BFD2ABB00D41791 /* Dongler.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		D81169DC1BFD198B00373D76 /* TheDongler */ = {
 			isa = PBXNativeTarget;
@@ -79,6 +97,7 @@
 				D81169D91BFD198B00373D76 /* Sources */,
 				D81169DA1BFD198B00373D76 /* Frameworks */,
 				D81169DB1BFD198B00373D76 /* CopyFiles */,
+				06A758831BFD2AB000D41791 /* Headers */,
 			);
 			buildRules = (
 			);

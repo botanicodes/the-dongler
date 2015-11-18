@@ -14,6 +14,7 @@
 @property CBCentralManager* centralManager;
 
 // scanning properties
+@property dispatch_queue_t scanQueue;
 @property dispatch_semaphore_t scanSem;
 @property (weak) DonglerFoundDongle scanDongleFound;
 
@@ -28,8 +29,9 @@
     self = [super init];
     if(!self) return self;
     
-    _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-    _scanSem = dispatch_semaphore_create(0);
+    _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
+    _scanSem   = dispatch_semaphore_create(0);
+    _scanQueue = dispatch_queue_create("donglerScanQueue", 0);
     
     return self;
 }
@@ -38,7 +40,7 @@
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
-    // NO OP
+    NSLog(@"Dongler status %lu", central.state);
 }
 
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary<NSString *,id> *)advertisementData RSSI:(NSNumber *)RSSI
@@ -63,6 +65,11 @@
     return dongler;
 }
 
++ (void)prepare
+{
+    [Dongler sharedDongler];
+}
+
 + (Dongle *)connectedDongle
 {
     return [self sharedDongler].connectedDongle;
@@ -82,19 +89,23 @@
     
     // set the current found dongle reaction
     dongler.scanDongleFound = foundDongle;
+    
+    // seems like this has to happen on the main thread
     [dongler.centralManager scanForPeripheralsWithServices:services options:nil];
     
-    // wait here until their peripheral scan has completed
-    long hasTimedOut = NO;
-    while(!hasTimedOut){
-        hasTimedOut = dispatch_semaphore_wait(dongler.scanSem, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
-    }
-    
-    // no new dongles showed up for 10 seconds. stop scanning.
-    [dongler.centralManager stopScan];
-    
-    // finish and call the completion handler
-    complete(nil);
+    dispatch_async(dongler.scanQueue, ^{
+        // wait here until their peripheral scan has completed
+        long hasTimedOut = NO;
+        while(!hasTimedOut){
+            hasTimedOut = dispatch_semaphore_wait(dongler.scanSem, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
+        }
+        
+        // no new dongles showed up for 10 seconds. stop scanning.
+        [dongler.centralManager stopScan];
+        
+        // finish and call the completion handler
+        complete(nil);
+    });
 }
 
 + (void)connectToDongle:(Dongle*)dongle withCompletion:(DonglerActionComplete)complete
