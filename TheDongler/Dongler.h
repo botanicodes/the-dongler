@@ -10,16 +10,18 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import "Dongle.h"
 
-typedef void(^DonglerListComplete)           (NSArray<Dongle*>*, NSError*);
-typedef void(^DonglerConnectionStateComplete)(NSError*);
+typedef void(^DonglerFoundDongle)(Dongle*);
+typedef void(^DonglerActionComplete)(NSError*);
 
 @interface Dongler : NSObject<CBCentralManagerDelegate>
 
 + (Dongle *)connectedDongle;
 
-+ (void)listDonglesWithCompletion:(DonglerListComplete)complete;
-+ (void)connectToDongle:(Dongle*)dongle withCompletion:(DonglerConnectionStateComplete)complete;
-+ (void)disconnectFromDongle:(Dongle*)dongle withCompletion:(DonglerConnectionStateComplete)complete;
++ (void)listDonglesWithServices:(NSArray<CBUUID*>*)services
+                    foundDongle:(DonglerFoundDongle)foundDongle
+                 withCompletion:(DonglerActionComplete)complete;
++ (void)connectToDongle:(Dongle*)dongle withCompletion:(DonglerActionComplete)complete;
++ (void)disconnectFromDongle:(Dongle*)dongle withCompletion:(DonglerActionComplete)complete;
 
 @end
 
