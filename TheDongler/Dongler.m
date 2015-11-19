@@ -16,7 +16,14 @@
 // scanning properties
 @property dispatch_queue_t scanQueue;
 @property dispatch_semaphore_t scanSem;
-@property (weak) DonglerFoundDongle scanDongleFound;
+@property (strong) DonglerFoundDongle scanDongleFoundAction;
+
+// connecting properties
+@property (strong) DonglerActionComplete connectedToDongleAction;
+@property NSLock* connectingToDongleLock;
+
+// disconnection properties
+@property (strong) DonglerActionComplete disconnectedFromDongleAction;
 
 @end
 
@@ -32,6 +39,7 @@
     _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
     _scanSem   = dispatch_semaphore_create(0);
     _scanQueue = dispatch_queue_create("donglerScanQueue", 0);
+    _connectingToDongleLock = [[NSLock alloc] init];
     
     return self;
 }
@@ -45,11 +53,35 @@
 
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary<NSString *,id> *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    // invoke the current dongle found block
-    [Dongler sharedDongler].scanDongleFound([Dongle withPeripheral:peripheral]);
-    
-    // tell listDonglesWithSerices: that a new dongle has been found so it doesn't time out yet
-    dispatch_semaphore_signal([Dongler sharedDongler].scanSem);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // invoke the current dongle found block
+        self.scanDongleFoundAction([Dongle withPeripheral:peripheral]);
+        
+        // tell listDonglesWithSerices: that a new dongle has been found so it doesn't time out yet
+        dispatch_semaphore_signal(self.scanSem);
+    });
+}
+
+- (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
+{
+    self.connectedToDongleAction(nil);
+    [self.connectingToDongleLock unlock];
+}
+
+- (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    self.connectedToDongleAction(error);
+    [self.connectingToDongleLock unlock];
+}
+
+- (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    if(self.disconnectedFromDongleAction){
+        self.disconnectedFromDongleAction(error);
+    }
+    else{
+        NSLog(@"Disconnected with no completion block: %@", error.description);
+    }
 }
 
 #pragma mark - Class methods
@@ -88,7 +120,7 @@
     }
     
     // set the current found dongle reaction
-    dongler.scanDongleFound = foundDongle;
+    dongler.scanDongleFoundAction = foundDongle;
     
     // seems like this has to happen on the main thread
     [dongler.centralManager scanForPeripheralsWithServices:services options:nil];
@@ -101,22 +133,31 @@
         }
         
         // no new dongles showed up for 10 seconds. stop scanning.
-        [dongler.centralManager stopScan];
-        
-        // finish and call the completion handler
-        complete(nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [dongler.centralManager stopScan];
+            
+            // finish and call the completion handler
+            complete(nil);
+        });
     });
 }
 
 + (void)connectToDongle:(Dongle*)dongle withCompletion:(DonglerActionComplete)complete
 {
+    Dongler* dongler = [self sharedDongler];
 
+    [dongler.connectingToDongleLock lock];
+    dongler.connectedToDongleAction = complete;
+    [dongler.centralManager connectPeripheral:dongle.peripheral options:nil];
 }
 
 
 + (void)disconnectFromDongle:(Dongle*)dongle withCompletion:(DonglerActionComplete)complete
 {
+    Dongler* dongler = [self sharedDongler];
     
+    dongler.disconnectedFromDongleAction = complete;
+    [dongler.centralManager cancelPeripheralConnection:dongle.peripheral];
 }
 
 

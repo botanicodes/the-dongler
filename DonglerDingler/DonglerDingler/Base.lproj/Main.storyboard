@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -24,16 +25,43 @@
                                     <action selector="scan:" destination="BYZ-38-t0r" eventType="touchUpInside" id="br8-rI-U3W"/>
                                 </connections>
                             </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="saY-Oe-1CE">
+                                <rect key="frame" x="0.0" y="63" width="600" height="461"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <activityIndicatorView key="tableFooterView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" id="gJe-Bq-Tjx">
+                                    <rect key="frame" x="0.0" y="72" width="600" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="dongleCell" selectionStyle="default" indentationWidth="10" reuseIdentifier="dongleCell" id="gmZ-AY-BCb">
+                                        <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gmZ-AY-BCb" id="NLB-43-BFq">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="saY-Oe-1CE" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="3hL-ps-W0Q"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="saY-Oe-1CE" secondAttribute="trailing" constant="-20" id="QLD-LG-4V9"/>
                             <constraint firstItem="zXt-Kv-Mpl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kS6-eQ-6D6"/>
+                            <constraint firstItem="saY-Oe-1CE" firstAttribute="top" secondItem="zXt-Kv-Mpl" secondAttribute="bottom" constant="13" id="ole-PE-veq"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="saY-Oe-1CE" secondAttribute="bottom" constant="76" id="xIp-hC-X16"/>
                             <constraint firstItem="zXt-Kv-Mpl" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="zcm-yc-csa"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="dongleTable" destination="saY-Oe-1CE" id="xLg-hX-CPu"/>
+                        <outlet property="spinner" destination="gJe-Bq-Tjx" id="4wP-u6-sbU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="575" y="410"/>
         </scene>
     </scenes>
 </document>

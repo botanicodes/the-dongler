@@ -340,6 +340,7 @@
 				06A7587C1BFD2A5300D41791 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
