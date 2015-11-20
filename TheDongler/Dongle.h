@@ -15,10 +15,14 @@ typedef struct {
 } dongleMessage_t;
 
 
+
 @interface Dongle : NSObject<CBPeripheralDelegate>
 
 @property CBPeripheral *peripheral;
 
+@property (readonly) BOOL isConnected;
+
+- (void)interrogate;
 - (void)writeData:(NSData*)data toUUID:(CBUUID*)uuid;
 - (NSData*)readDataFromUUID:(CBUUID*)uuid;
 

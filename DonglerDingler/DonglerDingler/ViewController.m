@@ -93,10 +93,16 @@
             else{
                 NSLog(@"Dongle connected!");
                 [self.dongleTable reloadData];
+                [self readValueFromDongle: dongle];
             }
         }];
     }
 
+}
+
+- (void) readValueFromDongle:(Dongle *)dongle {
+    NSData *data = [dongle readDataFromUUID:[CBUUID UUIDWithString:@"FF01"]];
+    NSLog(@"%@", data);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

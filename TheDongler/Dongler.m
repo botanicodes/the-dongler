@@ -21,6 +21,7 @@
 // connecting properties
 @property (strong) DonglerActionComplete connectedToDongleAction;
 @property NSLock* connectingToDongleLock;
+@property Dongle* currentDongle;
 
 // disconnection properties
 @property (strong) DonglerActionComplete disconnectedFromDongleAction;
@@ -64,6 +65,8 @@
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
 {
+    [self.currentDongle interrogate];
+    //[peripheral discoverServices:nil];
     self.connectedToDongleAction(nil);
     [self.connectingToDongleLock unlock];
 }
@@ -147,6 +150,7 @@
     Dongler* dongler = [self sharedDongler];
 
     [dongler.connectingToDongleLock lock];
+    dongler.currentDongle = dongle;
     dongler.connectedToDongleAction = complete;
     [dongler.centralManager connectPeripheral:dongle.peripheral options:nil];
 }
